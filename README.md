@@ -57,5 +57,9 @@ pip install -r requirements.txt
 # ---- Crea el super usuario --------
 python manage.py createsuperuser
 
+# ---- Crea migraciones -------
+python manage.py makemigrations
+python manage.py migrate 
+
 # ---- Ejecución de la aplicacion -------
 python manage.py runserver
