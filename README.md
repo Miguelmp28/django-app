@@ -40,7 +40,7 @@ Sigue estos pasos para clonar el proyecto y ejecutarlo en tu entorno local:
 
 ```bash
 # ---- Clonar el repositorio ------------
-git clone https://github.com/Miguelmp28/appdjango.git
+git clone https://github.com/Miguelmp28/django-app.git
 
 # Crear entorno virtual
 python -m venv venv
