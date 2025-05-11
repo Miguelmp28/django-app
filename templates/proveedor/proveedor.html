@@ -1,0 +1,254 @@
+{% extends 'base.html' %}
+
+
+{% block css %}
+<title>{{ titulo }}</title>
+<style>
+    td, th,h3 {
+        text-align: center;
+        vertical-align: middle;
+    }
+    h3, h5{
+        background-image: url(../../static/img/3.png);
+        text-align: center;
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    .pro {
+        animation: pro 2.5s infinite;
+    }
+    @keyframes pro {
+        from, to {transform: scale(1,1);}
+        25% {transform: scale(0.9, 1.1);}
+        50% {transform: scale(1.1, 0.9);}
+        75% {transform: scale(0.95, 1.05);}
+    }
+</style>
+    {{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <h3 class="pro">Proveedores</h3>
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalUsuario">
+                <i class="bi bi-person-plus-fill"></i> Nuevo Proveedor
+            </button>
+        </div>
+
+        <div class="col-12 mt-3">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr class="table-success">
+                            <th>Empresa</th>
+                            <th>NIT</th>
+                            <th>Email</th>
+                            <th>Dirección</th>
+                            <th>Conductor</th>
+                            <th>Identificacion</th>
+                            <th>Teléfono</th>
+                            <th colspan="2"><i class="bi bi-gear-fill"></i> Opciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for proveedores in proveedor %}
+                        <tr>
+                            <td>{{ proveedores.nombres }}</td>
+                            <td>{{ proveedores.nit }}</td>
+                            <td>{{ proveedores.correo }}</td>
+                            <td>{{ proveedores.direccion }}</td>
+                            <td>{{ proveedores.conductor }}</td>
+                            <td>{{ proveedores.identificacion }}</td>
+                            <td>{{ proveedores.telefono }}</td>
+                            <td>
+                                <button class="btn btn-warning btnEditar"
+                                    data-id="{{ proveedores.id_proveedor }}"
+                                    data-nombre="{{ proveedores.nombres }}"
+                                    data-identificacion="{{ proveedores.identificacion }}"
+                                    data-correo="{{ proveedores.correo }}"
+                                    data-telefono="{{ proveedores.telefono }}"
+                                    data-conductor="{{ proveedores.conductor }}"
+                                    data-nit="{{ proveedores.nit }}"
+                                    data-direccion="{{ proveedores.direccion }}">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
+                            </td>
+                            <td>
+                                <button class="btn btn-danger btEliminar"
+                                    data-id="{{ proveedores.id_proveedor }}">
+                                    <i class="bi bi-trash-fill"></i>
+                                </button>
+                            </td>                            
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalUsuario" tabindex="-1" aria-labelledby="modalUsuarioLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" id="formProveedor">
+                {% csrf_token %}
+                <div class="modal-header bg-success">
+                    <h5 class="modal-title pro" id="modalUsuarioLabel">Nuevo Proveedor</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="IdProveedor" name="id_proveedor">
+                    <div class="mb-3">
+                        <label class="form-label">Empresa</label>
+                        <input type="text" class="form-control" id="IdNombre" name="nombres">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">NIT</label>
+                        <input type="text" class="form-control" id="IdNit" name="nit">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="text" class="form-control" id="IdCorreo" name="correo">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Direccion</label>
+                        <input type="text" class="form-control" id="IdDireccion" name="direccion">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Conductor</label>
+                        <input type="text" class="form-control" id="IdConductor" name="conductor">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Identificación</label>
+                        <input type="text" class="form-control" id="IdIdentificacion" name="identificacion">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Teléfono</label>
+                        <input type="text" class="form-control" id="Idtelefono" name="telefono">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-success" type="submit">
+                        <i class="bi bi-person-fill-check"></i> Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+{% if messages %}
+<script>
+    {% for message in messages %}
+        Swal.fire({
+            icon: "{% if message.tags == 'success' %}success{% else %}warning{% endif %}",
+            text: '{{ message }}',
+            showConfirmButton: false,
+            toast: true,
+            timer:3000,
+            position: 'top-end',
+            timerProgressBar: true,
+        })
+    {% endfor %}
+</script>
+{% endif %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        document.addEventListener('click', function (e) {
+            const btnEditar = e.target.closest('.btnEditar');
+            if (btnEditar) {
+                Swal.fire({
+                    title: '¿Editar proveedor?',
+                    text: "¿Estás seguro de editar este proveedor?",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Editar',
+                    cancelButtonText: 'Cancelar',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById('IdProveedor').value = btnEditar.dataset.id;
+                        document.getElementById('IdNombre').value = btnEditar.dataset.nombre;
+                        document.getElementById('IdNit').value = btnEditar.dataset.nit;
+                        document.getElementById('IdCorreo').value = btnEditar.dataset.correo;
+                        document.getElementById('IdIdentificacion').value = btnEditar.dataset.identificacion;
+                        document.getElementById('IdConductor').value = btnEditar.dataset.conductor;
+                        document.getElementById('IdDireccion').value = btnEditar.dataset.direccion;
+                        document.getElementById('Idtelefono').value = btnEditar.dataset.telefono;
+
+                        let modal = new bootstrap.Modal(document.getElementById('modalUsuario'));
+                        modal.show();
+
+                        Swal.fire({
+                            icon: 'success',
+                            text: 'Cargando datos...⌚',
+                            showConfirmButton: false,
+                            timerProgressBar: true,
+                            timer: 1500
+                        });
+                    }
+                });
+            }
+            const btnEliminar = e.target.closest('.btEliminar');
+            if (btnEliminar) {
+                e.preventDefault();
+                Swal.fire({
+                    title: '¿Eliminar Proveedor?',
+                    text: "El proveedor será desactivado y no podrá ser utilizado.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Desactivar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const id = btnEliminar.dataset.id;
+
+                        const formData = new FormData();
+                        formData.append('csrfmiddlewaretoken', csrftoken);
+                        formData.append('id_proveedor', id);
+                        formData.append('nombres', btnEliminar.dataset.nombre);
+                        formData.append('nit', btnEliminar.dataset.nit);
+                        formData.append('correo', btnEliminar.dataset.correo);
+                        formData.append('telefono', btnEliminar.dataset.telefono);
+                        formData.append('conductor', btnEliminar.dataset.conductor);
+                        formData.append('identificacion', btnEliminar.dataset.identificacion);
+                        formData.append('direccion', btnEliminar.dataset.direccion);
+                        formData.append('desactivar', '1');
+
+                        fetch('/apps/proveedor/', {
+                            method: 'POST',
+                            body: formData
+                        }).then(response => {
+                            if (response.redirected) {
+                                window.location.href = response.url;
+                            } else if (response.ok) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    text: 'Proveedor desactivado',
+                                    showConfirmButton: false,
+                                    timerProgressBar:true,
+                                    timer: 1500
+                                });
+                                btnEliminar.closest('tr').remove();
+                            } else {
+                                Swal.fire('Error', 'No se pudo desactivar el proveedor.', 'error');
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    });
+</script>
+{% endblock %}

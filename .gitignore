@@ -1,0 +1,10 @@
+## DJANGO ##
+*.pyc
+*.pyo
+__pycache__/
+**/__pycache__/
+migrations/
+db.sqlite3
+
+# Entornos virtuales
+venv/

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block css %}
+    <title>{{ titulo }}</title>
+    <link rel="stylesheet" href="{% static 'css/inicio.css' %}">
+    {{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="contenedor">
+    <div class="tarjeta">
+        <img src="{% static 'img/pro.png' %}">
+        <h4><a href="{% url 'apps:proveedor' %}">Sección Proveedores <i class="bi bi-person-badge"></i></a></h4>
+        <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Totam explicabo pariatur praesentium. Suscipit quaerat ea perspiciatis numquam officiis, laborum at, accusamus incidunt, expedita aliquam nostrum ipsum minima illum dicta cupiditate.</p>
+    </div>
+    <div class="tarjeta">
+        <img src="{% static 'img/img4-.png' %}">
+        <h4><a href="{% url 'apps:productos' %}">Sección Productos <i class="bi bi-cart-check-fill"></i></a></h4>
+        <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Totam explicabo pariatur praesentium. Suscipit quaerat ea perspiciatis numquam officiis, laborum at, accusamus incidunt, expedita aliquam nostrum ipsum minima illum dicta cupiditate.</p>
+    </div>
+    <div class="tarjeta">
+        <img src="{% static 'img/user.png' %}">
+        <h4><a href="{% url 'apps:usuarios' %}">Sección Usuarios <i class="bi bi-person-circle"></i></a></h4>
+        <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Totam explicabo pariatur praesentium. Suscipit quaerat ea perspiciatis numquam officiis, laborum at, accusamus incidunt, expedita aliquam nostrum ipsum minima illum dicta cupiditate.</p>
+    </div>
+</div>
+{% endblock %}

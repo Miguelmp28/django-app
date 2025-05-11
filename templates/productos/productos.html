@@ -1,0 +1,270 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block css %}
+<title>{{ titulo }}</title>
+<style>
+    td,
+    th,
+    h3 {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    h3 {
+        background-image: url(../../static/img/img2.jpg);
+        text-align: center;
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    .pro {
+        animation: pro 2.5s infinite;
+    }
+
+    @keyframes pro {
+
+        from,
+        to {
+            transform: scale(1, 1);
+        }
+
+        25% {
+            transform: scale(0.9, 1.1);
+        }
+
+        50% {
+            transform: scale(1.1, 0.9);
+        }
+
+        75% {
+            transform: scale(0.95, 1.05);
+        }
+    }
+</style>
+    {{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <h3 class="pro">Productos</h3>
+            <button class="btn btn-info" data-bs-toggle='modal' data-bs-target="#modalProductos">
+                <i class="bi bi-plus-circle"></i> Nuevo Producto
+            </button>
+        </div>
+        <div class="col-12 mt-3">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr class="table-info">
+                            <th>Código</th>
+                            <th>Nombre del producto</th>
+                            <th>Pasillo</th>
+                            <th>Proveedor</th>
+                            <th>Fecha Ingreso</th>
+                            <th>Cantidad</th>
+                            <th>Precio</th>
+                            <th>Total</th>
+                            <th colspan="2"><i class="bi bi-gear-fill"></i> Opciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for producto in productos %}
+                        <tr>
+                            <td>{{producto.codigo}}</td>
+                            <td>{{producto.nombre}}</td>
+                            <td>{{producto.pasillo.nombre}}</td>
+                            <td>{{producto.proveedor.nombres}}</td>
+                            <td>{{producto.fecha_ingreso}}</td>
+                            <td><strong class="badge bg-warning">{{producto.cantidad}} unidades</strong></td>
+                            <td><strong class="badge bg-success">${{producto.precio|intcomma }}</strong></td>
+                            <td><strong class="badge bg-info">${{producto.total|intcomma}}</strong></td>
+                            <td>
+                                <button class="btn btn-warning Editar" 
+                                    data-id="{{ producto.id_productos }}"
+                                    data-codigo="{{ producto.codigo }}" 
+                                    data-nombre="{{ producto.nombre }}"
+                                    data-cantidad="{{ producto.cantidad }}"
+                                    data-precio="{{ producto.precio|floatformat:2|default_if_none:'0.000' }}"
+                                    data-pasillo="{{ producto.pasillo.id_pasillo }}"
+                                    data-proveedor="{{ producto.proveedor.id_proveedor }}">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
+                            </td>
+                            <td>
+                                <button class="btn btn-danger Eliminar"
+                                    data-id="{{ producto.id_productos }}"
+                                    data-nombre="{{ producto.nombre}}">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalProductos" tabindex="-1" aria-labelledby="modalProductosLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" id="formProducto">
+                {% csrf_token %}
+                <div class="modal-header bg-info">
+                    <h5 class="modal-title pro" id="modalProductosLabel">Nuevo Producto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="Idproductos" name="id_productos">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" name="nombres" id="Id_nombre" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Codígo</label>
+                        <input type="number" name="codigo" id="Idcodigo" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Cantidad</label>
+                        <input type="number" name="cantidad" id="Idcantidad" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Precio</label>
+                        <input type="number" name="precio" id="Idprecio" class="form-control" step="0.001" min="0"
+                            max="99999999999">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Pasillo</label>
+                        <select name="pasillo" class="form-select" id="Idpasillo" required>
+                            <option value="">SELECCIONE</option>
+                            {% for pasillo in pasillos %}
+                            <option value="{{pasillo.id_pasillo}}">{{pasillo.nombre}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Proveedor</label>
+                        <select name="proveedor" class="form-select" id="Idproveedor" required>
+                            <option value="">SELECCIONE</option>
+                            {% for proveedores in proveedor %}
+                            <option value="{{proveedores.id_proveedor}}">{{proveedores.nombres}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-success" type="submit">
+                        Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+{% if messages %}
+<script>
+    {% for message in messages %}
+    Swal.fire({
+        icon: "{% if message.tags == 'success' %}success{% else %}warning{% endif %}",
+        text: '{{ message }}',
+        timer: 3000,
+        showConfirmButton: false,
+        timerProgressBar: true,
+        toast: true,
+        position: 'top-end',
+    })
+    {% endfor %}
+</script>
+{% endif %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        document.addEventListener('click', function (e) {
+            const btnEditar = e.target.closest('.Editar');
+            if (btnEditar) {
+                Swal.fire({
+                    title: '¿Editar producto?',
+                    text: "¿Estás seguro de editar este producto?",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Editar',
+                    cancelButtonText: 'Cancelar',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById('Idproductos').value = btnEditar.dataset.id;
+                        document.getElementById('Id_nombre').value = btnEditar.dataset.nombre;
+                        document.getElementById('Idcodigo').value = btnEditar.dataset.codigo;
+                        document.getElementById('Idcantidad').value = btnEditar.dataset.cantidad;
+                        document.getElementById('Idprecio').value = (btnEditar.dataset.precio || '').replace(',', '.');
+                        document.getElementById('Idpasillo').value = btnEditar.dataset.pasillo;
+                        document.getElementById('Idproveedor').value = btnEditar.dataset.proveedor;
+
+                        new bootstrap.Modal(document.getElementById('modalProductos')).show();
+
+                        Swal.fire({
+                            icon: 'success',
+                            text: 'Cargando datos...⌚',
+                            showConfirmButton: false,
+                            timerProgressBar: true,
+                            timer: 1500
+                        });
+                    }
+                });
+            }
+
+            const btnEliminar = e.target.closest('.Eliminar');
+            if (btnEliminar) {
+                e.preventDefault();
+
+                const productoId = btnEliminar.dataset.id;
+
+                Swal.fire({
+                    title: `¿Eliminar Producto?`,
+                    text: "El producto será desactivado y no podrá ser utilizado.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Desactivar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const formData = new FormData();
+                        formData.append('csrfmiddlewaretoken', csrftoken);
+                        formData.append('id_productos', productoId);
+                        formData.append('desactivar', '1');
+
+                        fetch('/apps/productos/', {
+                            method: 'POST',
+                            body: formData
+                        }).then(response => {
+                            if (response.ok) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    text: 'Producto desactivado ✅',
+                                    showConfirmButton: false,
+                                    timerProgressBar: true,
+                                    timer: 1500
+                                });
+                                btnEliminar.closest('tr').remove();
+                            } else {
+                                Swal.fire('Error', 'No se pudo desactivar el producto.', 'error');
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,253 @@
+{% extends 'base.html' %}
+
+{% block css %}
+<title>{{ titulo }}</title>
+<style>
+    td, th,h3 {
+        text-align: center;
+        vertical-align: middle;
+    }
+    h3{
+        background-image: url(../../static/img/3.png);
+        text-align: center;
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    .pro {
+        animation: pro 2.5s infinite;
+    }
+    @keyframes pro {
+        from, to {transform: scale(1,1);}
+        25% {transform: scale(0.9, 1.1);}
+        50% {transform: scale(1.1, 0.9);}
+        75% {transform: scale(0.95, 1.05);}
+    }
+</style>
+    {{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <h3 class="pro">Usuarios</h3>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalUsuario">
+                <i class="bi bi-person-plus-fill"></i> Nuevo Usuario
+            </button>
+        </div>
+
+        <div class="col-12 mt-3">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr class="table-primary">
+                            <th>Nombres</th>
+                            <th>Identificación</th>
+                            <th>Email</th>
+                            <th>Teléfono</th>
+                            <th>Productos</th>
+                            <th>Cantidad</th>
+                            <th colspan="2"><i class="bi bi-gear-fill"></i> Opciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for usuario in usuarios %}
+                        <tr>
+                            <td>{{ usuario.nombres }}</td>
+                            <td>{{ usuario.identificacion }}</td>
+                            <td>{{ usuario.email }}</td>
+                            <td>{{ usuario.celular }}</td>
+                            <td>
+                                {% for up in usuario.usuarioproducto_set.all %}
+                                    <p><strong class="badge bg-info">{{ up.producto.nombre }}</strong></p>
+                                {% empty %}
+                                    <p><strong class="badge bg-danger">No asignado</strong></p>
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for up in usuario.usuarioproducto_set.all %}
+                                    <p><strong class="badge bg-success">{{ up.cantidad_asignada }} unidades</strong></p>
+                                {% endfor %}
+                            </td>
+                            <td>
+                                <button class="btn btn-warning btnEditar"
+                                    data-id="{{ usuario.id_usuario }}"
+                                    data-nombre="{{ usuario.nombres }}"
+                                    data-identificacion="{{ usuario.identificacion }}"
+                                    data-email="{{ usuario.email }}"
+                                    data-celular="{{ usuario.celular }}"
+                                    data-productos="{{ usuario.usuarioproducto_set.first.producto.id_productos }}"
+                                    data-cantidad="{{ usuario.usuarioproducto_set.first.cantidad_asignada }}">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
+                            </td>
+                            <td>
+                                <button class="btn btn-danger btEliminar"
+                                    data-id="{{ usuario.id_usuario }}">
+                                    <i class="bi bi-trash-fill"></i>
+                                </button>
+                            </td>                            
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>        
+    </div>
+</div>
+
+<div class="modal fade" id="modalUsuario" tabindex="-1" aria-labelledby="modalUsuarioLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" id="formUsuario">
+                {% csrf_token %}
+                <div class="modal-header bg-primary">
+                    <h3 class="modal-title pro" id="modalUsuarioLabel">Nuevo Usuario</h3>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="IdUsuario" name="id_usuario">
+                    <div class="mb-3">
+                        <label class="form-label">Nombres</label>
+                        <input type="text" class="form-control" id="NombreID" name="nombres">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Identificación</label>
+                        <input type="text" class="form-control" id="IdentificacionID" name="identificacion">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Correo Electrónico</label>
+                        <input type="text" class="form-control" id="IdEmail" name="email">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Teléfono</label>
+                        <input type="text" class="form-control" id="IdCelular" name="celular">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Productos</label>
+                        <select name="productos" id="IdProductos" class="form-select">
+                            <option value="">SELECCIONE</option>
+                            {% for producto in productos %}
+                                <option value="{{ producto.id_productos }}">{{ producto.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Cantidad</label>
+                        <input type="number" name="cantidad_asignada" id="idcantidad" class="form-control" placeholder="Minimo 1" min="1">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger" type="button" data-bs-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-primary" type="submit">
+                        <i class="bi bi-person-fill-check"></i> Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+{% if messages %}
+<script>
+    {% for message in messages %}
+        Swal.fire({
+            icon: "{% if message.tags == 'success' %}success{% else %}warning{% endif %}",
+            text: '{{ message }}',
+            showConfirmButton: false,
+            toast: true,
+            timer:3000,
+            position: 'top-end',
+            timerProgressBar: true,
+        })
+    {% endfor %}
+</script>
+{% endif %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        document.addEventListener('click', function (e) {
+            const btnEditar = e.target.closest('.btnEditar');
+            if (btnEditar) {
+                Swal.fire({
+                    title: '¿Editar usuario?',
+                    text: "¿Estás seguro de editar este usuario?",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Editar',
+                    cancelButtonText: 'Cancelar',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById('IdUsuario').value = btnEditar.dataset.id;
+                        document.getElementById('NombreID').value = btnEditar.dataset.nombre;
+                        document.getElementById('IdentificacionID').value = btnEditar.dataset.identificacion;
+                        document.getElementById('IdEmail').value = btnEditar.dataset.email;
+                        document.getElementById('IdCelular').value = btnEditar.dataset.celular
+                        document.getElementById('IdProductos').value = btnEditar.dataset.productos;
+                        document.getElementById('idcantidad').value = btnEditar.dataset.cantidad;
+
+                        new bootstrap.Modal(document.getElementById('modalUsuario')).show();
+
+                        Swal.fire({
+                            icon: 'success',
+                            text: 'Cargando datos...⌚',
+                            showConfirmButton: false,
+                            timerProgressBar: true,
+                            timer: 1500
+                        });
+                    }
+                });
+            }
+
+            const btnEliminar = e.target.closest('.btEliminar');
+            if (btnEliminar) {
+                e.preventDefault();
+
+                const productoId = btnEliminar.dataset.id;
+
+                Swal.fire({
+                    title: `¿Eliminar Usuario?`,
+                    text: "El usuario será desactivado y no podrá ser utilizado.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Desactivar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const formData = new FormData();
+                        formData.append('csrfmiddlewaretoken', csrftoken);
+                        formData.append('id_usuario', productoId);
+                        formData.append('desactivar', '1');
+
+                        fetch('/apps/usuarios/', {
+                            method: 'POST',
+                            body: formData
+                        }).then(response => {
+                            if (response.ok) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    text: 'Usuario desactivado ✅',
+                                    showConfirmButton: false,
+                                    timerProgressBar: true,
+                                    timer: 1500
+                                });
+                                btnEliminar.closest('tr').remove();
+                            } else {
+                                Swal.fire('Error', 'No se pudo desactivar el producto.', 'error');
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    });
+</script>
+{% endblock %}
