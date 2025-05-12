@@ -42,14 +42,14 @@ Sigue estos pasos para clonar el proyecto y ejecutarlo en tu entorno local:
 # ---- Clonar el repositorio ------------
 git clone https://github.com/Miguelmp28/django-app.git
 
+# ---- Ingresar al directorio del proyecto -----
+cd appdjango
+
 # Crear entorno virtual
 python -m venv venv
 
 # Activar entorno virtual (Windows)
 venv\Scripts\activate
-
-# ---- Ingresar al directorio del proyecto -----
-cd appdjango
 
 # ---- Insatalación de los requerimientos ------
 pip install -r requirements.txt
