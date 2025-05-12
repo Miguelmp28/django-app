@@ -54,12 +54,12 @@ venv\Scripts\activate
 # ---- Insatalación de los requerimientos ------
 pip install -r requirements.txt
 
-# ---- Crea el super usuario --------
-python manage.py createsuperuser
-
 # ---- Crea migraciones -------
 python manage.py makemigrations
 python manage.py migrate 
+
+# ---- Crea el super usuario --------
+python manage.py createsuperuser
 
 # ---- Ejecución de la aplicacion -------
 python manage.py runserver
